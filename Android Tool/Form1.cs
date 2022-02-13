@@ -15,10 +15,11 @@ namespace Android_Tool
         }
         public static string xmlpath,port,loader,cloud,qcjob,mtkjob,args;
         public static bool blu,isdual;
+        //This will fuck richTextBox1 from background worker
         private void logs(string text,Color color)
         {
             Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(text,color); }));
-        }
+        }//
         #region Windows Form
         private void xm_Click(object sender, EventArgs e)
         {
@@ -113,7 +114,8 @@ namespace Android_Tool
                 string f = fbd.SelectedPath.ToString();
                 if (File.Exists(f + @"\images\NON-HLOS.bin") || File.Exists(f+@"NON-HLOS.bin"))
                 {
-                    fwp.Text = f;
+                    f=f.Replace("\\images"," ");
+                    fwp.Text = f.Trim();
                 }
                 else
                 {
@@ -136,7 +138,7 @@ namespace Android_Tool
         //Xiaomi tab>Patch Firmware 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            mpa.RunWorkerAsync();
         }
         //MTK Tab
         private void button2_Click(object sender, EventArgs e)
@@ -448,18 +450,20 @@ namespace Android_Tool
 
         private void ModemPatch()
         {
-            logs("Patching NON-HLOS.bin", Color.Black);
+            File.WriteAllBytes(Directory.GetCurrentDirectory() + "\\bin\\sfk.exe",Properties.Resources.sfk);
+            logs("Patching NON-HLOS.bin : ", Color.Black);
             if (File.Exists(fwp.Text + @"\images\NON-HLOS.bin"))
             {                
                 ProcessStartInfo patch = new ProcessStartInfo()
                 {
-                    FileName = "sfk.exe",
-                    WorkingDirectory = @"bin",
+                    FileName = "cmd.exe",
+                    WorkingDirectory = Directory.GetCurrentDirectory()+@"\bin\",
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    Arguments = "replace " + fwp.Text + @"\images\NON-HLOS.bin" + " -binary " + "\""+"/43415244415050/4D415244415050/"+"\"" + " -dump -yes",
+                    Arguments = "/c sfk.exe replace " + fwp.Text + @"\images\NON-HLOS.bin" + " -binary " + "\""+"/43415244415050/4D415244415050/"+"\"" + " -dump -yes",
                 };
-                Process.Start(patch);
+                Process.Start(patch).WaitForExit();
+                logs("Done", Color.Green);
             }
             else
             {
