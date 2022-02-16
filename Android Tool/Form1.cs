@@ -14,7 +14,7 @@ namespace Android_Tool
             InitializeComponent();
         }
         public static string xmlpath,port,loader,cloud,qcjob,mtkjob,args;
-        public static bool blu,isdual;
+        public static bool blu,isdual,isfrp;
         //This will fuck richTextBox1 from background worker
         private void logs(string text,Color color)
         {
@@ -28,6 +28,23 @@ namespace Android_Tool
             fbb.BackColor = Color.Silver;
             wtb.BackColor= Color.Silver;
             tabControl1.SelectedIndex = 0;
+        }
+        private void button13_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo i = new ProcessStartInfo("cmd.exe")
+            {
+                Arguments = "/c taskkill /f /im python*",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+            };
+            Process.Start(i);
+            button2.Enabled = true;
+            richTextBox1.Clear();
+        }
+        
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -44,6 +61,7 @@ namespace Android_Tool
             fwp.Text = "Double click to load firmware";
             label4.Text = "1. Select Operation" + "\n2. Click Start" + "\n3. Wait 5s and plug in preloader mode or brom mode";
             fbfwp.Text = "Double click to load firmware";
+            logs("Python မရှိပါက MTK Tab ကို အသုံးပြု၍မရပါ။\nPython မရှိပါက Windows Tool Tab မှ Python ကို အရင် Install လုပ်ပါ။", Color.Red);
         }
 
         private void mtkb_Click(object sender, EventArgs e)
@@ -57,13 +75,14 @@ namespace Android_Tool
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            richTextBox1.Clear();
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_ysl.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_ysl.mbn";                    
                     break;
                 case 1:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_jason.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_jason.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\jason\raw.xml";
                     break;
                 case 2:
@@ -73,34 +92,35 @@ namespace Android_Tool
                     loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_ugg.mbn";
                     break;
                 case 4:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_whyred.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_whyred.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\whyred\raw.xml";
                     break;
                 case 5:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_tulip.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_tulip.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\tulip\raw.xml";
                     break;
                 case 6:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_lavender.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_lavender.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\lavender\raw.xml";
                     break;
                 case 7:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_ginkgo.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_ginkgo.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\ginkgo\raw.xml";
+                    logs("Warning : \nEnable OEM Unlock in Developer Options first.",Color.Red);
                     break;
                 case 8:
                     loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_oxygen.mbn";
                     break;
                 case 9:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_nitrogen.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_nitrogen.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\nitrogen\raw.xml";
                     break;
                 case 10:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_wayne.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_wayne.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\wayne\raw.xml";
                     break;
                 case 11:
-                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_platina.mbn";
+                    loader = Directory.GetCurrentDirectory() + @"\bin\fh\prog_emmc_firehose_platina.elf";
                     xmlpath = Directory.GetCurrentDirectory() + @"\bin\xml\platina\raw.xml";
                     break;
             }
@@ -138,12 +158,13 @@ namespace Android_Tool
         //Xiaomi tab>Patch Firmware 
         private void button1_Click(object sender, EventArgs e)
         {
+            richTextBox1.Clear();
             mpa.RunWorkerAsync();
         }
         //MTK Tab
         private void button2_Click(object sender, EventArgs e)
         {
-            richTextBox1.Clear();
+            richTextBox1.Clear();            
             mtk.RunWorkerAsync();
         }
         //Fastboot tab > firmware browse
@@ -167,25 +188,64 @@ namespace Android_Tool
         //Fastboot tab > fastboot flash
         private void button4_Click(object sender, EventArgs e)
         {
-            FBInfo();
-            if (blu)
+            if (fastboot.isConnected())
             {
-                FBFlash();
+                FBInfo();
+                if (blu)
+                {
+                    FBFlash();
+                }
+                else
+                {
+                    MessageBox.Show("Bootloader is locked!", "Can't Flash");
+                }
             }
             else
             {
-                MessageBox.Show("Bootloader is locked!", "Can't Flash");
+                MessageBox.Show("No fastboot Device");
             }
         }
         //Fastboot tab > blu
         private void button5_Click(object sender, EventArgs e)
         {
-            fastboot.process("flashing unlock_critical");
+            if (fastboot.isConnected())
+            {
+                logs("Unlocking Bootloader : ", Color.Black);
+                if(fastboot.process("flashing unlock_critical").Contains("Finished"))
+                {
+                    logs("Success", Color.DarkGreen);
+                }
+                else
+                {
+                    logs("Fail",Color.Red);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No fastboot device.");
+            }
         }
         //Fastboot tab > FRP Reset
         private void button6_Click(object sender, EventArgs e)
         {
-            fastboot.erase("frp");
+            if (fastboot.isConnected())
+            {
+                logs("Erasing frp", Color.Black);
+                FBInfo();
+                if (isfrp)
+                {
+                    fastboot.erase("frp");
+                }
+                else
+                {
+                    fastboot.erase("config");
+                }
+                logs("Done", Color.DarkGreen);
+            }
+            else
+            {
+                MessageBox.Show("No fastboot device");
+            }
         }
         //Fastboot tab > Mi Sig Unlock
         private void button7_Click(object sender, EventArgs e)
@@ -195,7 +255,13 @@ namespace Android_Tool
         //Python
         private void button8_Click(object sender, EventArgs e)
         {
-            Process.Start(@"bin\python.exe");
+            Process.Start(@"bin\python.exe").WaitForExit();
+            ProcessStartInfo i = new ProcessStartInfo()
+            {
+                FileName ="req.bat",
+                WorkingDirectory = @"bin\mtk\mtkclient",
+            };
+            Process.Start(i);
         }
         //adb
         private void button9_Click(object sender, EventArgs e)
@@ -301,24 +367,30 @@ namespace Android_Tool
             switch (mtkjob)
             {
                 case "bypass":
+                    logs("Operation - MTK Auth Bypass\n", Color.DarkGreen);
                     MTK("payload");
                     break;
                 case "reset":
+                    logs("Operation - MTK Factory Reset\n", Color.DarkGreen);
                     MTK("e userdata");
                     break;
                 case "keepdata":
+                    logs("Operation - MTK Factory Reset(Keep Data)\n", Color.DarkGreen);
                     MTK("w para bin\\list.dat");
                     break;
                 case "FRP":
+                    logs("Operation - MTK FRP Erase\n", Color.DarkGreen);
                     MTK("e frp");
                     break;
                 case "BLU":
+                    logs("Operation - MTK Bootloader Unlock\n", Color.DarkGreen);
                     MTK("da seccfg unlock");
                     break;
                 case "MiAcc":
+                    logs("Operation - MTK Mi Account Erase\n", Color.DarkGreen);
                     MTK("e persist");
                     break;
-            }
+            }            
         }
 
         private void mpa_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -350,7 +422,7 @@ namespace Android_Tool
                     logs("\nErasing Account : ", Color.Black);
                     if(emmcdl.process("-p " + pn + " -f " + "\"" + loader + "\"" + " -e persist").Contains("Successfully"))
                     {                        
-                        logs("Success\nRebooting", Color.Green);
+                        logs("Success\nRebooting", Color.DarkGreen);
                         fhloader.Reboot(pn);
                     }
                 }
@@ -441,13 +513,7 @@ namespace Android_Tool
             {
                 logs("No Device", Color.Red);
             }
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        }      
         private void ModemPatch()
         {
             File.WriteAllBytes(Directory.GetCurrentDirectory() + "\\bin\\sfk.exe",Properties.Resources.sfk);
@@ -463,7 +529,7 @@ namespace Android_Tool
                     Arguments = "/c sfk.exe replace " + fwp.Text + @"\images\NON-HLOS.bin" + " -binary " + "\""+"/43415244415050/4D415244415050/"+"\"" + " -dump -yes",
                 };
                 Process.Start(patch).WaitForExit();
-                logs("Done", Color.Green);
+                logs("Done", Color.DarkGreen);
             }
             else
             {
@@ -604,6 +670,10 @@ namespace Android_Tool
                                 isdual = true;
                             }
                         }
+                        if (!line.Contains("config:"))
+                        {
+                            isfrp = true;
+                        }
                         i++;
                     }
                 }
@@ -618,10 +688,10 @@ namespace Android_Tool
             this.Cursor = Cursors.WaitCursor;
             logs(Environment.NewLine + "Erasing boot...", Color.Black);
             fastboot.erase("boot");
-            logs("Done", Color.LimeGreen);
+            logs("Done", Color.DarkGreen);
             logs(Environment.NewLine + "Erasing metadata...", Color.Black);
             fastboot.erase("metadata");
-            logs("Done", Color.LimeGreen);
+            logs("Done", Color.DarkGreen);
             int i = 0;
             while (i < checkedListBox1.Items.Count)
             {
@@ -632,7 +702,7 @@ namespace Android_Tool
                     string log = argsp[0].Replace("flash ", " ");
                     logs(Environment.NewLine + "Flashing " + log.TrimStart().TrimEnd() + "...", Color.Black);
                     fastboot.flash(log.Trim(), "\"" +fbfwp.Text + "\\" + argsp[1] + "\\" + argsp[2] + "\"");
-                    logs("Done", Color.Green);
+                    logs("Done", Color.DarkGreen);
                     richTextBox1.ScrollToCaret();
                     checkedListBox1.SetItemChecked(i, false);
                 }
@@ -644,7 +714,7 @@ namespace Android_Tool
                 fastboot.process("set_active a");
             }
             logs(Environment.NewLine + Environment.NewLine + "Developed By :", Color.Black);
-            logs("Kyaw Khant Zaw", Color.Green);            
+            logs("Kyaw Khant Zaw", Color.DarkGreen);            
             this.Cursor = Cursors.Default;
         }
         #endregion
@@ -675,6 +745,10 @@ namespace Android_Tool
                 Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(s.TrimStart() + Environment.NewLine); }));
             }
             if (!string.IsNullOrEmpty(outline.Data) && outline.Data.Contains("Successfully"))
+            {
+                Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
+            }
+            if(outline.Data.Contains("wrote") || outline.Data.Contains("formatted"))
             {
                 Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
             }
