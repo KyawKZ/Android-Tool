@@ -256,12 +256,7 @@ namespace Android_Tool
         private void button8_Click(object sender, EventArgs e)
         {
             Process.Start(@"bin\python.exe").WaitForExit();
-            ProcessStartInfo i = new ProcessStartInfo()
-            {
-                FileName ="req.bat",
-                WorkingDirectory = @"bin\mtk\mtkclient",
-            };
-            Process.Start(i);
+            Process.Start(@"bin\mtk\mtkclient\req.bat"); 
         }
         //adb
         private void button9_Click(object sender, EventArgs e)
