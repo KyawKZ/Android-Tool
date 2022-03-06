@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using JJLab.Android;
+using System.Data;
 using System.IO;
 using System.Diagnostics;
 
@@ -13,6 +14,7 @@ namespace Android_Tool
         {
             InitializeComponent();
         }
+        DataTable dt = new DataTable();
         public static string xmlpath,port,loader,cloud,qcjob,mtkjob,args;
         public static bool blu,isdual,isfrp;
         //This will fuck richTextBox1 from background worker
@@ -181,33 +183,24 @@ namespace Android_Tool
                 else
                 {
                     fbfwp.Text = p;
+                    createdatatable();
                     ParseFlashBat();
+                    dataGridView1.RowHeadersVisible = false;
+                    dataGridView1.AllowUserToAddRows = false;
+                    dataGridView1.BackColor = Color.LightBlue;
+                    dataGridView1.DataSource = dt;
                 }
             }
         }
         //Fastboot tab > fastboot flash
         private void button4_Click(object sender, EventArgs e)
         {
-            if (fastboot.isConnected())
-            {
-                FBInfo();
-                if (blu)
-                {
-                    FBFlash();
-                }
-                else
-                {
-                    MessageBox.Show("Bootloader is locked!", "Can't Flash");
-                }
-            }
-            else
-            {
-                MessageBox.Show("No fastboot Device");
-            }
+            fbfler.RunWorkerAsync();
         }
         //Fastboot tab > blu
         private void button5_Click(object sender, EventArgs e)
         {
+            richTextBox1.Clear();
             if (fastboot.isConnected())
             {
                 logs("Unlocking Bootloader : ", Color.Black);
@@ -225,13 +218,18 @@ namespace Android_Tool
                 MessageBox.Show("No fastboot device.");
             }
         }
+        private void button14_Click(object sender, EventArgs e)
+        {
+            Process.Start(@"bin\mtk\mtkclient\req.bat");
+        }
         //Fastboot tab > FRP Reset
         private void button6_Click(object sender, EventArgs e)
         {
+            richTextBox1.Clear();
             if (fastboot.isConnected())
-            {
-                logs("Erasing frp", Color.Black);
+            {                
                 FBInfo();
+                logs("\nErasing frp : ", Color.Black);
                 if (isfrp)
                 {
                     fastboot.erase("frp");
@@ -241,6 +239,7 @@ namespace Android_Tool
                     fastboot.erase("config");
                 }
                 logs("Done", Color.DarkGreen);
+                fastboot.process("reboot");
             }
             else
             {
@@ -508,7 +507,10 @@ namespace Android_Tool
             {
                 logs("No Device", Color.Red);
             }
-        }      
+        }
+
+        
+
         private void ModemPatch()
         {
             File.WriteAllBytes(Directory.GetCurrentDirectory() + "\\bin\\sfk.exe",Properties.Resources.sfk);
@@ -530,7 +532,8 @@ namespace Android_Tool
             {
                 logs("File not found", Color.Red);
             }
-        }
+        }    
+
         private void BLU()
         {
             logs("Searching EDL Port : ", Color.Black);
@@ -556,10 +559,37 @@ namespace Android_Tool
         }
         #endregion
         #region Fastboot Tab
+        public void createdatatable()
+        {
+            dt.Columns.Clear();
+            dt.Rows.Clear();
+            dt.Columns.Add("Operation", typeof(string));
+            dt.Columns.Add("Partition", typeof(string));
+            dt.Columns.Add("Filename", typeof(string));
+        }
+        private void fbfler_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            if (fastboot.isConnected())
+            {
+                FBInfo();
+                if (blu)
+                {
+                    FBFlash();
+                }
+                else
+                {
+                    logs("Bootloader is locked!\nCan't Flash", Color.Red);
+                }
+            }
+            else
+            {
+                logs("No fastboot devicce", Color.Red);
+            }
+        }
         private void ParseFlashBat()
         {
             richTextBox1.Clear();
-            checkedListBox1.Items.Clear();
+            dataGridView1.Columns.Clear();
             if (fbfwp.Text.Contains("images"))
             {
                 using (StreamReader r = new StreamReader(fbfwp.Text + "\\flash_all.bat"))
@@ -587,20 +617,21 @@ namespace Android_Tool
                                 fn = fn.Replace("\\", " ");
                             }
                             string[] final = fn.Split('=');
-                            string cmd = final[0].TrimStart().TrimEnd() + " \\images\\" + final[1].TrimStart().TrimEnd();
+                            string cmd = final[0].TrimStart().TrimEnd() + " \\images\\" + final[1].TrimStart().TrimEnd();                            
                             if (cmd.Contains("%~dp0 "))
                             {
-                                cmd.Replace("%~dp0 ", " ");
-                                checkedListBox1.Items.Add(cmd);
+                                cmd = cmd.Replace("%~dp0 ", " ");
+                                string[] d = cmd.Split(' ');
+                                dt.Rows.Add(d[0].Trim(), d[1].Trim(), fbfwp.Text + d[2].Trim());
                             }
                             else
                             {
-                                checkedListBox1.Items.Add(cmd);
-                            }
-                            checkedListBox1.SetItemChecked(i, true);
+                                string[] d = cmd.Split(' ');
+                                dt.Rows.Add(d[0].Trim(), d[1].Trim(), fbfwp.Text + d[2].Trim());
+                            }                            
                             i++;
                         }
-                    }
+                    }                    
                 }
             }
             else
@@ -650,7 +681,7 @@ namespace Android_Tool
                         {
                             line = line.Replace("(bootloader) ", " ").TrimStart();
                             string[] pd = line.Split(':');
-                            logs("Product : ", Color.Black);
+                            logs(Environment.NewLine+"Product : ", Color.Black);
                             logs(pd[1].TrimStart().TrimEnd(), Color.DarkGreen);
                         }
                         if (line.Contains("slot-count"))
@@ -681,26 +712,22 @@ namespace Android_Tool
         private void FBFlash()
         {
             this.Cursor = Cursors.WaitCursor;
-            logs(Environment.NewLine + "Erasing boot...", Color.Black);
+            logs("\n\nErasing boot : ", Color.Black);
             fastboot.erase("boot");
             logs("Done", Color.DarkGreen);
-            logs(Environment.NewLine + "Erasing metadata...", Color.Black);
+            logs(Environment.NewLine + "Erasing metadata : ", Color.Black);
             fastboot.erase("metadata");
             logs("Done", Color.DarkGreen);
             int i = 0;
-            while (i < checkedListBox1.Items.Count)
-            {
-                if (checkedListBox1.GetItemChecked(i) == true)
-                {
-                    args = checkedListBox1.Items[i].ToString();
-                    string[] argsp = args.Split('\\');
-                    string log = argsp[0].Replace("flash ", " ");
-                    logs(Environment.NewLine + "Flashing " + log.TrimStart().TrimEnd() + "...", Color.Black);
-                    fastboot.flash(log.Trim(), "\"" +fbfwp.Text + "\\" + argsp[1] + "\\" + argsp[2] + "\"");
-                    logs("Done", Color.DarkGreen);
-                    richTextBox1.ScrollToCaret();
-                    checkedListBox1.SetItemChecked(i, false);
-                }
+            while (i < dt.Rows.Count)
+            {                                
+                var pt=dt.Rows[i][1];
+                var fn = dt.Rows[i][2];
+                logs("\n" + DateTime.Now, Color.DarkGreen);
+                logs(" - Writing ", Color.Black);
+                logs(pt.ToString() + ": ",Color.DarkBlue);
+                fastboot.flash(pt.ToString(), fn.ToString());
+                logs("Done",Color.DarkGreen);                
                 i++;
             }
             if (isdual)
@@ -709,7 +736,8 @@ namespace Android_Tool
                 fastboot.process("set_active a");
             }
             logs(Environment.NewLine + Environment.NewLine + "Developed By :", Color.Black);
-            logs("Kyaw Khant Zaw", Color.DarkGreen);            
+            logs("Kyaw Khant Zaw", Color.DarkGreen);
+            fastboot.process("reboot");
             this.Cursor = Cursors.Default;
         }
         #endregion

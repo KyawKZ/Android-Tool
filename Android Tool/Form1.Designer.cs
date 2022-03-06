@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -47,13 +48,14 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.fbfwp = new System.Windows.Forms.TextBox();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button14 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
@@ -69,11 +71,13 @@
             this.MiAccErase = new System.ComponentModel.BackgroundWorker();
             this.mtk = new System.ComponentModel.BackgroundWorker();
             this.mpa = new System.ComponentModel.BackgroundWorker();
+            this.fbfler = new System.ComponentModel.BackgroundWorker();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -114,7 +118,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage1.Size = new System.Drawing.Size(401, 420);
+            this.tabPage1.Size = new System.Drawing.Size(401, 390);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -232,7 +236,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage2.Size = new System.Drawing.Size(401, 420);
+            this.tabPage2.Size = new System.Drawing.Size(401, 390);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -295,24 +299,42 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.dataGridView1);
             this.tabPage3.Controls.Add(this.button7);
             this.tabPage3.Controls.Add(this.button6);
             this.tabPage3.Controls.Add(this.button5);
             this.tabPage3.Controls.Add(this.button4);
             this.tabPage3.Controls.Add(this.fbfwp);
-            this.tabPage3.Controls.Add(this.checkedListBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(401, 420);
+            this.tabPage3.Size = new System.Drawing.Size(401, 390);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToResizeColumns = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView1.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(-1, 3);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView1.Size = new System.Drawing.Size(402, 349);
+            this.dataGridView1.TabIndex = 6;
+            // 
             // button7
             // 
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(271, 93);
+            this.button7.Location = new System.Drawing.Point(136, 387);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(124, 23);
             this.button7.TabIndex = 5;
@@ -323,7 +345,7 @@
             // button6
             // 
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button6.Location = new System.Drawing.Point(271, 64);
+            this.button6.Location = new System.Drawing.Point(265, 387);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(124, 23);
             this.button6.TabIndex = 4;
@@ -334,7 +356,7 @@
             // button5
             // 
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Location = new System.Drawing.Point(271, 35);
+            this.button5.Location = new System.Drawing.Point(6, 387);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(124, 23);
             this.button5.TabIndex = 3;
@@ -345,9 +367,9 @@
             // button4
             // 
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Location = new System.Drawing.Point(271, 6);
+            this.button4.Location = new System.Drawing.Point(317, 358);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(124, 23);
+            this.button4.Size = new System.Drawing.Size(72, 23);
             this.button4.TabIndex = 2;
             this.button4.Text = "Flash";
             this.button4.UseVisualStyleBackColor = true;
@@ -355,23 +377,16 @@
             // 
             // fbfwp
             // 
-            this.fbfwp.Location = new System.Drawing.Point(3, 352);
+            this.fbfwp.Location = new System.Drawing.Point(6, 358);
             this.fbfwp.Name = "fbfwp";
             this.fbfwp.ReadOnly = true;
-            this.fbfwp.Size = new System.Drawing.Size(262, 21);
+            this.fbfwp.Size = new System.Drawing.Size(305, 21);
             this.fbfwp.TabIndex = 1;
             this.fbfwp.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.fbfwp_MouseDoubleClick);
             // 
-            // checkedListBox1
-            // 
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(3, 6);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(262, 340);
-            this.checkedListBox1.TabIndex = 0;
-            // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button14);
             this.tabPage4.Controls.Add(this.button12);
             this.tabPage4.Controls.Add(this.button11);
             this.tabPage4.Controls.Add(this.button10);
@@ -384,6 +399,16 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(236, 55);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(104, 41);
+            this.button14.TabIndex = 5;
+            this.button14.Text = "Install MTK Lib";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
             // button12
             // 
@@ -529,6 +554,10 @@
             // 
             this.mpa.DoWork += new System.ComponentModel.DoWorkEventHandler(this.mpa_DoWork);
             // 
+            // fbfler
+            // 
+            this.fbfler.DoWork += new System.ComponentModel.DoWorkEventHandler(this.fbfler_DoWork);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -559,6 +588,7 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -592,7 +622,6 @@
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox fbfwp;
         private System.Windows.Forms.Button button4;
@@ -608,6 +637,9 @@
         private System.ComponentModel.BackgroundWorker mtk;
         private System.ComponentModel.BackgroundWorker mpa;
         private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.ComponentModel.BackgroundWorker fbfler;
+        private System.Windows.Forms.Button button14;
     }
 }
 
