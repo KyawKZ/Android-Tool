@@ -15,8 +15,8 @@ namespace Android_Tool
             InitializeComponent();
         }
         DataTable dt = new DataTable();
-        public static string xmlpath,port,loader,cloud,qcjob,mtkjob,args;
-        public static bool blu,isdual,isfrp;
+        public static string xmlpath,port,loader,cloud,qcjob,mtkjob,args,cprel;
+        public static bool blu,isdual,isfrp,davb,skp;
         //This will fuck richTextBox1 from background worker
         private void logs(string text,Color color)
         {
@@ -255,7 +255,12 @@ namespace Android_Tool
         private void button8_Click(object sender, EventArgs e)
         {
             Process.Start(@"bin\python.exe").WaitForExit();
-            Process.Start(@"bin\mtk\mtkclient\req.bat"); 
+            ProcessStartInfo psi = new ProcessStartInfo()
+            {
+                FileName= @"bin\mtk\mtkclient\req.bat",
+                WorkingDirectory= @"bin\mtk\mtkclient\",
+            };
+            Process.Start(psi);
         }
         //adb
         private void button9_Click(object sender, EventArgs e)
@@ -366,7 +371,7 @@ namespace Android_Tool
                     break;
                 case "reset":
                     logs("Operation - MTK Factory Reset\n", Color.DarkGreen);
-                    MTK("e userdata");
+                    MTK("e userdata --preloader="+"\""+cprel+"\"");
                     break;
                 case "keepdata":
                     logs("Operation - MTK Factory Reset(Keep Data)\n", Color.DarkGreen);
@@ -466,6 +471,31 @@ namespace Android_Tool
                 logs("No Port Found", Color.Red);
             }
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                davb = true;
+            }
+            else
+            {
+                davb = false;
+            }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked)
+            {
+                skp = true;
+            }
+            else
+            {
+                skp = false;
+            }
+        }
+
         //Mi Account Remove EU Rom
         private void EURom()
         {
@@ -541,15 +571,24 @@ namespace Android_Tool
             {                
                 string p = emmcdl.PortName;
                 logs(p, Color.DarkGreen);
-                logs("\nSending Unlock Data : ", Color.Black);
-                if (emmcdl.SendXML(p, loader, xmlpath))
+                logs("\nSending Loader : ",Color.Black);
+                if (emmcdl.SendLoader(p,loader))
                 {
-                    logs("Finished\nRebooting\nMay need to use Mi Sig Unlock in Fastboot tab.", Color.DarkGreen);
-                    fhloader.Reboot(p);
+                    logs("Success", Color.DarkGreen);
+                    logs("\nSending Unlock Data : ", Color.Black);
+                    if (emmcdl.SendXML(p, loader, xmlpath))
+                    {
+                        logs("Finished\nRebooting\nMay need to use Mi Sig Unlock in Fastboot tab.", Color.DarkGreen);
+                        fhloader.Reboot(p);
+                    }
+                    else
+                    {
+                        logs("Fail", Color.Red);
+                    }
                 }
                 else
                 {
-                    logs("Fail", Color.Red);
+                    logs("fail", Color.Red);
                 }
             }
             else
@@ -726,15 +765,38 @@ namespace Android_Tool
                 logs("\n" + DateTime.Now, Color.DarkGreen);
                 logs(" - Writing ", Color.Black);
                 logs(pt.ToString() + ": ",Color.DarkBlue);
-                fastboot.flash(pt.ToString(), fn.ToString());
-                logs("Done",Color.DarkGreen);                
+                if (skp)
+                {
+                    if (pt.ToString().Contains("preloader"))
+                    {
+                        logs("Preloader Skipped!",Color.Red);
+                    }
+                }
+                else
+                {
+                    fastboot.flash(pt.ToString(), fn.ToString());
+                    logs("Done", Color.DarkGreen);
+                }
+                if (pt.ToString().Contains("vbmeta"))
+                {
+                    if (davb)
+                    {
+                        fastboot.process("--disable-verity --disable-verification flash vbmeta " + fn.ToString());
+                        logs("Done", Color.DarkGreen);
+                    }
+                    else
+                    {
+                        fastboot.flash(pt.ToString(), fn.ToString());
+                        logs("Done", Color.DarkGreen);
+                    }
+                }
                 i++;
             }
             if (isdual)
             {
                 logs(Environment.NewLine + "Dual slot device detect :" + Environment.NewLine + "Setting active slot to A :", Color.Red);
                 fastboot.process("set_active a");
-            }
+            }            
             logs(Environment.NewLine + Environment.NewLine + "Developed By :", Color.Black);
             logs("Kyaw Khant Zaw", Color.DarkGreen);
             fastboot.process("reboot");
@@ -761,20 +823,23 @@ namespace Android_Tool
         }
         private void outputHandler(object sendingProcess, DataReceivedEventArgs outline)
         {
-            if (!string.IsNullOrEmpty(outline.Data) && outline.Data.Contains("Preloader"))
+            if (!string.IsNullOrEmpty(outline.Data) && !outline.Data.ToString().Contains("payload"))
             {
-                string s = outline.Data.ToString();
-                s = s.Replace("Preloader -", " ");
-                Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(s.TrimStart() + Environment.NewLine); }));
-            }
-            if (!string.IsNullOrEmpty(outline.Data) && outline.Data.Contains("Successfully"))
-            {
-                Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
-            }
-            if(outline.Data.Contains("wrote") || outline.Data.Contains("formatted"))
-            {
-                Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
-            }
+                if (outline.Data.Contains("Preloader"))
+                {
+                    string s = outline.Data.ToString();
+                    s = s.Replace("Preloader -", " ");
+                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(s.TrimStart() + Environment.NewLine); }));
+                }
+                if (outline.Data.Contains("Successfully"))
+                {
+                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
+                }
+                if (outline.Data.Contains("wrote") || outline.Data.Contains("formatted") || outline.Data.Contains("error"))
+                {
+                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
+                }
+            }            
         }
         #endregion
     }
