@@ -59,6 +59,7 @@ namespace Android_Tool
             comboBox1.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
             comboBox3.SelectedIndex= 0;
+            richTextBox1.BackColor = Color.LightGray;
             label1.Text = "Android Tool(By Kyaw Khant Zaw)";
             fwp.Text = "Double click to load firmware";
             label4.Text = "1. Select Operation" + "\n2. Click Start" + "\n3. Wait 5s and plug in preloader mode or brom mode";
@@ -258,7 +259,7 @@ namespace Android_Tool
             ProcessStartInfo psi = new ProcessStartInfo()
             {
                 FileName= @"bin\mtk\mtkclient\req.bat",
-                WorkingDirectory= @"bin\mtk\mtkclient\",
+                WorkingDirectory= @"bin\mtk\mtkclient",
             };
             Process.Start(psi);
         }
@@ -776,10 +777,11 @@ namespace Android_Tool
                 {
                     fastboot.flash(pt.ToString(), fn.ToString());
                     logs("Done", Color.DarkGreen);
+                    Invoke(new MethodInvoker(delegate { richTextBox1.ScrollToCaret(); }));
                 }
                 if (pt.ToString().Contains("vbmeta"))
                 {
-                    if (davb)
+                    if (davb==true)
                     {
                         fastboot.process("--disable-verity --disable-verification flash vbmeta " + fn.ToString());
                         logs("Done", Color.DarkGreen);
@@ -790,17 +792,17 @@ namespace Android_Tool
                         logs("Done", Color.DarkGreen);
                     }
                 }
-                i++;
+                i++;                
             }
             if (isdual)
             {
-                logs(Environment.NewLine + "Dual slot device detect :" + Environment.NewLine + "Setting active slot to A :", Color.Red);
+                logs(Environment.NewLine + "Dual slot device detect" + Environment.NewLine + "Setting active slot to A", Color.Red);
                 fastboot.process("set_active a");
             }            
             logs(Environment.NewLine + Environment.NewLine + "Developed By :", Color.Black);
             logs("Kyaw Khant Zaw", Color.DarkGreen);
             fastboot.process("reboot");
-            this.Cursor = Cursors.Default;
+            this.Cursor = Cursors.Default;            
         }
         #endregion
         #region MTK
@@ -823,23 +825,78 @@ namespace Android_Tool
         }
         private void outputHandler(object sendingProcess, DataReceivedEventArgs outline)
         {
-            if (!string.IsNullOrEmpty(outline.Data) && !outline.Data.ToString().Contains("payload"))
+            if (!string.IsNullOrEmpty(outline.Data))
             {
-                if (outline.Data.Contains("Preloader"))
+                if (outline.Data.Contains("Preloader -") && !outline.Data.Contains("Jumping")&& !outline.Data.Contains("SOC_ID"))
                 {
                     string s = outline.Data.ToString();
                     s = s.Replace("Preloader -", " ");
-                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(s.TrimStart() + Environment.NewLine); }));
-                }
-                if (outline.Data.Contains("Successfully"))
+                    s = s.TrimStart();
+                    if (s.Contains(":"))
+                    {
+                        string[] sp = s.Split(':');
+                        if (!s.Contains("EEP_PARAM"))
+                        {
+                            if (s.Contains("True"))
+                            {
+                                logs("\n" + sp[0] + " : ", Color.DarkOrange);
+                                logs(sp[1].TrimStart(), Color.DarkGreen) ;
+                            }
+                            else if (s.Contains("False"))
+                            {
+                                logs("\n" + sp[0] + " : ", Color.DarkOrange);
+                                logs(sp[1].TrimStart(), Color.Red);
+                            }
+                            else
+                            {
+                                logs("\n" + sp[0] + " : ", Color.DarkOrange);
+                                logs(sp[1].TrimStart(), Color.DarkGreen);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        logs("\n"+s, Color.DarkOrange);
+                    }
+                }                
+                if(outline.Data.Contains("PLTools -"))
                 {
-                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
+                    if(outline.Data.Contains("Loading payload"))
+                    {
+                        logs("\nDisabling Authentication : ", Color.DarkRed);                        
+                    }
+                    if (outline.Data.Contains("Successfully sent payload"))
+                    {
+                        logs("Success", Color.DarkGreen);
+                    }                    
                 }
-                if (outline.Data.Contains("wrote") || outline.Data.Contains("formatted") || outline.Data.Contains("error"))
+                if (outline.Data.Contains("DA_handler"))
                 {
-                    Invoke(new MethodInvoker(delegate { richTextBox1.AppendText(outline.Data.TrimStart() + Environment.NewLine); }));
+                    string s = outline.Data.Replace("DA_handler -", " ");
+                    s = s.TrimStart();
+                    logs("\n"+s, Color.DarkGreen);
                 }
-            }            
+                if (outline.Data.Contains("DAXFlash"))
+                {
+                    string s = outline.Data.Replace("DAXFlash -", " ");
+                    s = s.TrimStart();
+                    if (s.Contains(":"))
+                    {
+                        string[] os = s.Split(':');
+                        logs("\n" + os[0] + " : ", Color.Blue);
+                        logs(os[1].TrimStart(), Color.DarkGreen);
+                    }
+                    else
+                    {
+                        logs("\n" + s, Color.Blue);
+                    }
+                }
+                if(outline.Data.Contains("Wrote") || outline.Data.Contains("formatted"))
+                {
+                    logs("\nOperation complete successfully.", Color.DarkGreen);
+                }
+            }
+            Invoke(new MethodInvoker(delegate { richTextBox1.ScrollToCaret(); }));
         }
         #endregion
     }

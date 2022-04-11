@@ -91,7 +91,7 @@
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(452, 453);
+            this.richTextBox1.Size = new System.Drawing.Size(378, 453);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -101,11 +101,11 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Location = new System.Drawing.Point(449, 36);
+            this.tabControl1.Location = new System.Drawing.Point(375, 36);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(409, 446);
+            this.tabControl1.Size = new System.Drawing.Size(405, 446);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -120,7 +120,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage1.Size = new System.Drawing.Size(401, 408);
+            this.tabPage1.Size = new System.Drawing.Size(397, 420);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -238,7 +238,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage2.Size = new System.Drawing.Size(401, 408);
+            this.tabPage2.Size = new System.Drawing.Size(401, 420);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -421,7 +421,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(401, 408);
+            this.tabPage4.Size = new System.Drawing.Size(401, 420);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -493,7 +493,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(854, 30);
+            this.panel1.Size = new System.Drawing.Size(780, 30);
             this.panel1.TabIndex = 3;
             // 
             // button3
@@ -503,7 +503,7 @@
             this.button3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(822, 0);
+            this.button3.Location = new System.Drawing.Point(748, 0);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(30, 30);
             this.button3.TabIndex = 1;
@@ -524,7 +524,7 @@
             // 
             this.xm.FlatAppearance.BorderSize = 0;
             this.xm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.xm.Location = new System.Drawing.Point(452, 30);
+            this.xm.Location = new System.Drawing.Point(378, 30);
             this.xm.Name = "xm";
             this.xm.Size = new System.Drawing.Size(100, 30);
             this.xm.TabIndex = 4;
@@ -536,7 +536,7 @@
             // 
             this.mtkb.FlatAppearance.BorderSize = 0;
             this.mtkb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mtkb.Location = new System.Drawing.Point(551, 30);
+            this.mtkb.Location = new System.Drawing.Point(477, 30);
             this.mtkb.Name = "mtkb";
             this.mtkb.Size = new System.Drawing.Size(100, 30);
             this.mtkb.TabIndex = 5;
@@ -548,7 +548,7 @@
             // 
             this.fbb.FlatAppearance.BorderSize = 0;
             this.fbb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.fbb.Location = new System.Drawing.Point(650, 30);
+            this.fbb.Location = new System.Drawing.Point(576, 30);
             this.fbb.Name = "fbb";
             this.fbb.Size = new System.Drawing.Size(100, 30);
             this.fbb.TabIndex = 6;
@@ -560,7 +560,7 @@
             // 
             this.wtb.FlatAppearance.BorderSize = 0;
             this.wtb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.wtb.Location = new System.Drawing.Point(749, 30);
+            this.wtb.Location = new System.Drawing.Point(675, 30);
             this.wtb.Name = "wtb";
             this.wtb.Size = new System.Drawing.Size(105, 30);
             this.wtb.TabIndex = 7;
@@ -589,7 +589,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(854, 483);
+            this.ClientSize = new System.Drawing.Size(779, 483);
             this.Controls.Add(this.wtb);
             this.Controls.Add(this.fbb);
             this.Controls.Add(this.mtkb);
